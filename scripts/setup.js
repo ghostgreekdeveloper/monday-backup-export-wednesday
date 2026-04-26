@@ -71,7 +71,6 @@ async function setup() {
 
   console.log('\n✅ Setup complete!');
   console.log('🚀 Run "npm start" for production');
-  console.log('🛠️  Run "npm run dev" for development\n');
 }
 
 setup().catch(console.error);

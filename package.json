@@ -6,8 +6,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon --watch src --ignore 'backups/' --ignore 'logs/' --ignore '*.xlsx' --ignore '*.meta.json' --ignore '*.log.txt' src/server.js",
+    "start": "nodemon --watch src --ignore 'backups/' --ignore 'logs/' --ignore '*.xlsx' --ignore '*.meta.json' --ignore '*.log.txt' src/server.js",
     "setup": "node scripts/setup.js"
   },
   "dependencies": {

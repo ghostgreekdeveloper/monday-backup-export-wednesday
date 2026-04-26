@@ -46,11 +46,8 @@ npm run setup
 #    MONDAY_API_TOKEN=your_token_here
 #    MONDAY_BOARD_ID=your_board_id_here
 
-# 4. Start the server
+# 4. Start the server (auto-restarts on file changes)
 npm start
-
-# Or in development mode (auto-restarts on file changes)
-npm run dev
 ```
 
 Open your browser at `http://localhost:8733`
