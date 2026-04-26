@@ -21,7 +21,6 @@ A self-hosted Node.js backup system for Monday.com boards. Exports board data to
   - [Adjusting Log Settings](#adjusting-log-settings)
 - [API Reference](#api-reference)
 - [Project Structure](#project-structure)
-- [Known Issues](#known-issues)
 
 ---
 
