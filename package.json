@@ -1,0 +1,27 @@
+{
+  "name": "wednesday",
+  "version": "1.0.0",
+  "description": "Enterprise-grade Monday.com board backup system with Excel export, live preview, search, and scheduling",
+  "author": "ghostgreekdeveloper https://github.com/ghostgreekdeveloper",
+  "license": "SEE LICENSE IN LICENSE",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon --watch src --ignore 'backups/' --ignore 'logs/' --ignore '*.xlsx' --ignore '*.meta.json' --ignore '*.log.txt' src/server.js",
+    "setup": "node scripts/setup.js"
+  },
+  "dependencies": {
+    "axios": "^1.15.2",
+    "dotenv": "^16.6.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.22.1",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "node-cron": "^4.2.1",
+    "winston": "^3.19.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

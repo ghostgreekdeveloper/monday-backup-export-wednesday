@@ -1,0 +1,23 @@
+{
+  "theme": "light",
+  "language": "en",
+  "companyName": "",
+  "filenameFormat": "DD-MM-YYYY",
+  "timezone": "Europe/Athens",
+  "autoBackup": {
+    "enabled": true,
+    "frequency": "daily",
+    "hour": 11,
+    "minute": 50,
+    "intervalHours": 12
+  },
+  "logs": {
+    "console": true,
+    "file": true,
+    "http": true
+  },
+  "display": {
+    "zoom": 100,
+    "groupColors": true
+  }
+}

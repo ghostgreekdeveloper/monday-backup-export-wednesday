@@ -1,0 +1,1598 @@
+<!--
+    Wednesday – Monday Backup Enterprise
+    Copyright (c) 2026 ghostgreekdeveloper
+    Licensed for personal, non-commercial use only.
+    Commercial use requires permission: Discord @greekdeveloper GitHub: 
+    https://github.com/ghostgreekdeveloper
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wednesday v1.0.0 – Backup Manager</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-body: #F5F7FB;
+      --bg-surface: #FFFFFF;
+      --bg-hover: #F1F4F9;
+      --bg-active: #E2E8F0;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border-color: #e2e8f0;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --green: #10b981;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --radius: 10px;
+      --radius-lg: 14px;
+      --transition: 0.2s ease;
+    }
+
+    .dark {
+      --bg-body: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-hover: #334155;
+      --bg-active: #475569;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --accent: #60a5fa;
+      --accent-hover: #3b82f6;
+      --green: #34d399;
+      --red: #f87171;
+      --yellow: #fbbf24;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-body);
+      color: var(--text-primary);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+      transition: all var(--transition);
+    }
+
+    .sidebar {
+      width: 260px;
+      min-width: 180px;
+      max-width: 400px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      padding: 24px 16px;
+      flex-shrink: 0;
+      position: relative;
+      overflow-y: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sidebar-resize-handle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 5px;
+      height: 100%;
+      cursor: col-resize;
+      background: transparent;
+      z-index: 20;
+    }
+
+    .sidebar-resize-handle:hover,
+    .sidebar-resize-handle.active {
+      background: var(--accent);
+      opacity: 0.4;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 22px;
+      color: var(--accent);
+      margin-bottom: 32px;
+      letter-spacing: -0.5px;
+      user-select: none;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      transition: all var(--transition);
+    }
+
+    .nav-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+    }
+
+    .lang-select {
+      margin-top: 16px;
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .top-bar {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .action-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      border: none;
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition);
+      background: transparent;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-color);
+    }
+
+    .btn-icon {
+      padding: 8px;
+      border-radius: var(--radius);
+      background: transparent;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      color: var(--text-primary);
+      transition: all var(--transition);
+    }
+
+    .btn-icon:hover {
+      background: var(--bg-hover);
+    }
+
+    .page-content {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      gap: 24px;
+      overflow: hidden;
+    }
+
+    .explorer-panel {
+      width: 340px;
+      min-width: 240px;
+      max-width: 600px;
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .explorer-resize-handle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 5px;
+      height: 100%;
+      cursor: col-resize;
+      background: transparent;
+      z-index: 20;
+    }
+
+    .explorer-resize-handle:hover,
+    .explorer-resize-handle.active {
+      background: var(--accent);
+      opacity: 0.4;
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-surface);
+    }
+
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .tree-item {
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+      margin-bottom: 2px;
+      font-size: 13px;
+    }
+
+    .tree-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .tree-item.selected {
+      background: var(--accent);
+      color: white;
+    }
+
+    .tree-children {
+      margin-left: 20px;
+      border-left: 1px dashed var(--border-color);
+      padding-left: 8px;
+    }
+
+    .arrow-icon {
+      width: 16px;
+      font-size: 10px;
+      transition: transform 0.2s;
+      display: inline-block;
+      cursor: pointer;
+    }
+
+    .arrow-icon.expanded {
+      transform: rotate(90deg);
+    }
+
+    .sort-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .preview-panel {
+      flex: 1;
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .preview-toolbar {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      width: 240px;
+      margin-left: auto;
+    }
+
+    .search-input-wrapper .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input-wrapper input {
+      width: 100%;
+      padding: 8px 12px 8px 38px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .search-input-wrapper input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .zoom-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preview-container {
+      flex: 1;
+      overflow: auto;
+      padding: 16px;
+    }
+
+    .excel-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .excel-table th {
+      background: var(--bg-hover);
+      padding: 10px 12px;
+      font-weight: 600;
+      border: 1px solid var(--border-color);
+      top: 0;
+      white-space: nowrap;
+    }
+
+    .excel-table td {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+
+    .group-row td {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .company-row td {
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      background: var(--bg-hover);
+      padding: 12px;
+    }
+
+    .empty-row td {
+      height: 16px;
+      background: transparent;
+      border: none;
+    }
+
+    .search-highlight {
+      background: #fef08a;
+      color: #000;
+      border-radius: 2px;
+    }
+
+    .status-bar {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
+      padding: 10px 28px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .status-dot.warning {
+      background: var(--yellow);
+    }
+
+    .status-dot.error {
+      background: var(--red);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      width: 90%;
+      max-width: 800px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .alert {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+    }
+
+    .alert-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .alert-error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .alert-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .log-viewer {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .log-line {
+      padding: 2px 0;
+      border-bottom: 1px solid #2a2a2a;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-time {
+      color: #6b7280;
+      margin-right: 8px;
+    }
+
+    .log-info {
+      color: #60a5fa;
+    }
+
+    .log-debug {
+      color: #86efac;
+    }
+
+    .log-warn {
+      color: #fbbf24;
+    }
+
+    .log-error {
+      color: #f87171;
+    }
+
+    .log-http {
+      color: #c084fc;
+    }
+
+    .log-default {
+      color: #d4d4d4;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .setting-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+
+    .setting-card h3 {
+      font-size: 15px;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--accent);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .backup-section {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tree-checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .result-card {
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .result-card-header {
+      padding: 12px 16px;
+      background: var(--bg-hover);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .result-card-body {
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    .sort-select {
+      padding: 6px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      font-size: 12px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body class="light">
+  <div style="display:flex; width:100%; height:100vh;">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-resize-handle" id="sidebarResizeHandle"></div>
+      <div class="brand">Wednesday v1.0.0</div>
+      <nav>
+        <div class="nav-item active" data-page="dashboard"><i data-lucide="layout-dashboard"
+            style="width:18px;height:18px;"></i><span data-i18n="dashboard">Dashboard</span></div>
+        <div class="nav-item" data-page="backups"><i data-lucide="hard-drive" style="width:18px;height:18px;"></i><span
+            data-i18n="backups">Backups</span></div>
+        <div class="nav-item" data-page="logs"><i data-lucide="scroll-text" style="width:18px;height:18px;"></i><span
+            data-i18n="systemLogs">System Logs</span></div>
+        <div class="nav-item" data-page="settings"><i data-lucide="settings" style="width:18px;height:18px;"></i><span
+            data-i18n="settings">Settings</span></div>
+      </nav>
+      <select class="lang-select" id="langSelect">
+        <option value="en">English</option>
+        <option value="el">Ελληνικά</option>
+        <option value="sr">Српски</option>
+      </select>
+      <div class="sidebar-footer">
+        <div class="nav-item" onclick="toggleTheme()"><i data-lucide="moon" style="width:18px;height:18px;"></i><span
+            data-i18n="toggleTheme">Toggle Theme</span></div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="main-content">
+      <div class="top-bar">
+        <h1 class="page-title" id="pageTitle" data-i18n="dashboard">Dashboard</h1>
+        <div class="action-group">
+          <button class="btn btn-primary" onclick="runBackup()"><i data-lucide="play"
+              style="width:16px;height:16px;"></i><span data-i18n="createBackup">Create Backup</span></button>
+          <button class="btn btn-secondary" onclick="refreshAll()"><i data-lucide="refresh-cw"
+              style="width:16px;height:16px;"></i><span data-i18n="refresh">Refresh</span></button>
+        </div>
+      </div>
+
+      <!-- Dashboard Page -->
+      <div id="dashboardPage" class="page-content">
+        <div class="explorer-panel" id="explorerPanel">
+          <div class="explorer-resize-handle" id="explorerResizeHandle"></div>
+          <div class="panel-header"><span data-i18n="backupExplorer">📁 Backup Explorer</span>
+            <div><span id="backupCount"></span><button class="sort-btn" onclick="toggleSortOrder()"><i
+                  data-lucide="arrow-up-down" style="width:14px;height:14px;"></i><span
+                  id="sortOrderIcon">↓</span></button></div>
+          </div>
+          <div class="panel-content" id="fileTree">Loading...</div>
+        </div>
+        <div class="preview-panel">
+          <div class="preview-toolbar">
+            <div class="zoom-control"><button class="btn-icon" onclick="zoomOut()"><i data-lucide="zoom-out"
+                  style="width:16px;height:16px;"></i></button><span id="zoomLevel">100%</span><button class="btn-icon"
+                onclick="zoomIn()"><i data-lucide="zoom-in" style="width:16px;height:16px;"></i></button></div>
+            <button class="btn-icon" onclick="downloadCurrent()" id="downloadBtn" disabled><i data-lucide="download"
+                style="width:16px;height:16px;"></i><span data-i18n="download">Download</span></button>
+            <button class="btn-icon" onclick="deleteCurrent()" id="deleteBtn" disabled><i data-lucide="trash-2"
+                style="width:16px;height:16px;"></i><span data-i18n="delete">Delete</span></button>
+            <div class="search-input-wrapper"><i data-lucide="search" class="search-icon"
+                style="width:16px;height:16px;"></i><input type="text" placeholder="Search items..." id="searchInput"
+                onkeyup="filterPreview()"></div>
+          </div>
+          <div class="preview-container" id="previewContainer">
+            <div style="color:var(--text-muted);text-align:center;padding:60px;" data-i18n="selectFileToPreview">Select
+              a backup file to preview</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Backups Page -->
+      <div id="backupsPage" class="page-content hidden" style="flex-direction:column; overflow-y:auto;">
+        <div class="backup-section">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h2 data-i18n="browseBackups">📁 Browse Backups</h2>
+            <select class="sort-select" onchange="changeBrowseSort(this.value)">
+              <option value="newest" data-i18n="newestFirst">Newest first</option>
+              <option value="oldest" data-i18n="oldestFirst">Oldest first</option>
+            </select>
+          </div>
+          <div id="browseTree"></div>
+        </div>
+
+        <div class="backup-section" style="flex:1; display:flex; flex-direction:column;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+            <h2 data-i18n="searchAcrossBackups">🔍 Search Across Backups</h2>
+            <div class="zoom-control" style="margin-left:auto;">
+              <button class="btn-icon" onclick="searchZoomOut()"><i data-lucide="zoom-out"
+                  style="width:16px;height:16px;"></i></button><span id="searchZoomLevel">100%</span><button
+                class="btn-icon" onclick="searchZoomIn()"><i data-lucide="zoom-in"
+                  style="width:16px;height:16px;"></i></button>
+            </div>
+          </div>
+          <div style="display:flex; gap:12px; margin-bottom:20px; align-items:center; flex-wrap:wrap;">
+            <div class="search-input-wrapper" style="width:250px;"><i data-lucide="search" class="search-icon"
+                style="width:16px;height:16px;"></i><input type="text" placeholder="Search all backups..."
+                id="backupSearchInput"></div>
+            <button class="btn btn-primary" onclick="searchAllBackups()"><i data-lucide="search"
+                style="width:16px;height:16px;"></i><span data-i18n="search">Search</span></button>
+            <button class="btn btn-secondary" onclick="clearSearch()"><i data-lucide="x"
+                style="width:16px;height:16px;"></i><span data-i18n="clear">Clear</span></button>
+            <div style="margin-left:auto; font-size:13px; color:var(--text-muted);" id="searchStatus"
+              data-i18n="selectFilesToSearch">Select files to search</div>
+          </div>
+          <div style="display:flex; gap:12px; flex:1; overflow:hidden;">
+            <div style="width:250px; overflow-y:auto; border-right:1px solid var(--border-color); padding-right:8px;"
+              id="backupTree">
+              <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+                <select class="sort-select" onchange="changeSearchSort(this.value)">
+                  <option value="newest" data-i18n="newestFirst">Newest first</option>
+                  <option value="oldest" data-i18n="oldestFirst">Oldest first</option>
+                </select>
+              </div>
+              <div id="checkboxTreeContainer"></div>
+            </div>
+            <div style="flex:1; overflow-y:auto;" id="searchResults">
+              <div style="color:var(--text-muted);text-align:center;padding:60px;" data-i18n="selectFilesAndEnterTerm">
+                Select files and enter a search term</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logs Page -->
+      <div id="logsPage" class="page-content hidden">
+        <div
+          style="flex:1; background:var(--bg-surface); border-radius:var(--radius-lg); padding:24px; box-shadow:var(--shadow-sm); display:flex; flex-direction:column;">
+          <h2 data-i18n="systemLogs" style="margin-bottom:16px;">System Logs</h2>
+          <div id="logViewer" class="log-viewer">Loading logs...</div>
+        </div>
+      </div>
+
+      <!-- Settings Page -->
+      <div id="settingsPage" class="page-content hidden">
+        <div style="flex:1; overflow:auto;">
+          <form id="settingsForm">
+            <div class="settings-grid">
+              <div class="setting-card">
+                <h3 data-i18n="appearance">Appearance</h3>
+                <div class="form-group"><label class="form-label" data-i18n="theme">Theme</label><select name="theme"
+                    class="form-select">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                  </select></div>
+                <div class="form-group"><label class="form-label" data-i18n="language">Language</label><select
+                    name="language" class="form-select">
+                    <option value="en">English</option>
+                    <option value="el">Ελληνικά</option>
+                    <option value="sr">Српски</option>
+                  </select></div>
+              </div>
+              <div class="setting-card">
+                <h3 data-i18n="companyName">Company Name</h3>
+                <div class="form-group"><input type="text" name="companyName" class="form-input"
+                    placeholder="Company name"></div>
+              </div>
+              <div class="setting-card">
+                <h3 data-i18n="autoBackup">Auto Backup</h3>
+                <div class="checkbox-group"><input type="checkbox" name="autoBackupEnabled"
+                    id="autoBackupEnabled"><label for="autoBackupEnabled" data-i18n="enableAutoBackup">Enable automatic
+                    backups</label></div>
+                <div class="form-group"><label class="form-label" data-i18n="backupFrequency">Frequency</label><select
+                    name="frequency" class="form-select" id="frequencySelect">
+                    <option value="daily" data-i18n="daily">Daily at specific time</option>
+                    <option value="interval" data-i18n="interval">Every X hours</option>
+                  </select></div>
+                <div id="dailyTimeGroup"><label class="form-label" data-i18n="backupTime">Time (24h)</label>
+                  <div style="display:flex;gap:8px;"><input type="number" name="backupHour" min="0" max="23"
+                      class="form-input" placeholder="Hour" style="width:70px;"><span>:</span><input type="number"
+                      name="backupMinute" min="0" max="59" class="form-input" placeholder="Min" style="width:70px;">
+                  </div>
+                </div>
+                <div id="intervalGroup" class="hidden"><label class="form-label" data-i18n="runEveryHours">Every
+                    (hours)</label><input type="number" name="intervalHours" min="1" max="168" value="12"
+                    class="form-input" style="width:100px;"></div>
+              </div>
+              <div class="setting-card">
+                <h3 data-i18n="fileNaming">File Naming</h3>
+                <div class="form-group"><label class="form-label" data-i18n="filenameFormat">Filename
+                    Format</label><select name="filenameFormat" class="form-select">
+                    <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                  </select>
+                </div>
+                <h3>Timezone</h3>
+                <div class="form-group">
+                  <select name="timezone" class="form-select" id="timezoneSelect">
+                    <option value="Pacific/Kiritimati">UTC+14 Line Islands</option>
+                    <option value="Pacific/Apia">UTC+13 Apia</option>
+                    <option value="Pacific/Auckland">UTC+12 Auckland</option>
+                    <option value="Pacific/Guadalcanal">UTC+11 Solomon Islands</option>
+                    <option value="Australia/Sydney">UTC+10 Sydney</option>
+                    <option value="Asia/Tokyo">UTC+9 Tokyo</option>
+                    <option value="Asia/Shanghai">UTC+8 Shanghai</option>
+                    <option value="Asia/Bangkok">UTC+7 Bangkok</option>
+                    <option value="Asia/Dhaka">UTC+6 Dhaka</option>
+                    <option value="Asia/Karachi">UTC+5 Karachi</option>
+                    <option value="Asia/Dubai">UTC+4 Dubai</option>
+                    <option value="Europe/Moscow">UTC+3 Moscow</option>
+                    <option value="Europe/Athens">UTC+2 Athens</option>
+                    <option value="Europe/Berlin">UTC+1 Berlin</option>
+                    <option value="Europe/London">UTC+0 London</option>
+                    <option value="Atlantic/Cape_Verde">UTC-1 Cape Verde</option>
+                    <option value="America/Noronha">UTC-2 Noronha</option>
+                    <option value="America/Sao_Paulo">UTC-3 São Paulo</option>
+                    <option value="America/New_York">UTC-4 New York</option>
+                    <option value="America/Chicago">UTC-5 Chicago</option>
+                    <option value="America/Denver">UTC-6 Denver</option>
+                    <option value="America/Los_Angeles">UTC-7 Los Angeles</option>
+                    <option value="America/Anchorage">UTC-8 Anchorage</option>
+                    <option value="Pacific/Gambier">UTC-9 Gambier</option>
+                    <option value="Pacific/Honolulu">UTC-10 Honolulu</option>
+                    <option value="Pacific/Pago_Pago">UTC-11 Pago Pago</option>
+                    <option value="Pacific/Wake">UTC+12 Wake Island</option>
+                    <option value="Asia/Kolkata">UTC+5:30 India</option>
+                    <option value="Asia/Tehran">UTC+3:30 Iran</option>
+                    <option value="Australia/Adelaide">UTC+9:30 Adelaide</option>
+                    <option value="Pacific/Marquesas">UTC-9:30 Marquesas</option>
+                    <option value="America/St_Johns">UTC-3:30 Newfoundland</option>
+                    <option value="Asia/Kathmandu">UTC+5:45 Nepal</option>
+                    <option value="Pacific/Chatham">UTC+12:45 Chatham</option>
+                    <option value="Australia/Eucla">UTC+8:45 Eucla</option>
+                  </select>
+                </div>
+              </div>
+              <div class="setting-card">
+                <h3 data-i18n="logging">Logging</h3>
+                <div class="checkbox-group"><input type="checkbox" name="logConsole" checked><label
+                    data-i18n="consoleLog">Console logging</label></div>
+                <div class="checkbox-group"><input type="checkbox" name="logFile" checked><label
+                    data-i18n="fileLog">File logging</label></div>
+                <div class="checkbox-group"><input type="checkbox" name="logHttp" checked><label
+                    data-i18n="httpLog">HTTP request logging</label></div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top:24px;" data-i18n="saveSettings">Save
+              Settings</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="status-bar">
+        <div><span class="status-dot" id="credsStatus"></span> Monday.com</div>
+        <div><span class="status-dot" id="cronStatus"></span> <span id="cronScheduleText">Auto Backup</span></div>
+        <div>
+          <span data-i18n="lastBackup">📅 Last:</span> <span id="lastBackup">Never</span>
+        </div>
+        <div style="margin-left:auto;">
+          <span data-i18n="uptime">🕐 Uptime:</span> <span id="uptime">0s</span>
+        </div>
+      </div>
+      <div id="alertContainer" style="position:fixed; top:80px; right:24px; z-index:1000; max-width:400px;"></div>
+    </div>
+  </div>
+
+  <script>
+    // ====== I18N ======
+    const translations = {
+      en: {
+        dashboard: "Dashboard", backups: "Backups", systemLogs: "System Logs", settings: "Settings",
+        toggleTheme: "Toggle Theme", createBackup: "Create Backup", refresh: "Refresh",
+        backupExplorer: "📁 Backup Explorer", browseBackups: "📁 Browse Backups", searchAcrossBackups: "🔍 Search Across Backups",
+        download: "Download", delete: "Delete", selectFileToPreview: "Select a backup file to preview",
+        allBackups: "All Backups", appearance: "Appearance", theme: "Theme", language: "Language",
+        companyName: "Company Name", autoBackup: "Auto Backup", enableAutoBackup: "Enable automatic backups",
+        backupFrequency: "Frequency", daily: "Daily at specific time", interval: "Every X hours",
+        backupTime: "Time (24h)", runEveryHours: "Every (hours)", fileNaming: "File Naming",
+        filenameFormat: "Filename Format", logging: "Logging", consoleLog: "Console logging",
+        fileLog: "File logging", httpLog: "HTTP request logging", saveSettings: "Save Settings",
+        lastBackup: "Last:", uptime: "Uptime:", selectFilesToSearch: "Select files to search",
+        selectFilesAndEnterTerm: "Select files and enter a search term",
+        newestFirst: "Newest first", oldestFirst: "Oldest first", search: "Search", clear: "Clear",
+        months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      },
+      el: {
+        dashboard: "Πίνακας", backups: "Αντίγραφα", systemLogs: "Αρχεία Καταγραφής", settings: "Ρυθμίσεις",
+        toggleTheme: "Εναλλαγή Θέματος", createBackup: "Δημιουργία Αντιγράφου", refresh: "Ανανέωση",
+        backupExplorer: "📁 Εξερευνητής", browseBackups: "📁 Περιήγηση", searchAcrossBackups: "🔍 Αναζήτηση σε Αντίγραφα",
+        download: "Λήψη", delete: "Διαγραφή", selectFileToPreview: "Επιλέξτε αρχείο για προεπισκόπηση",
+        allBackups: "Όλα τα Αντίγραφα", appearance: "Εμφάνιση", theme: "Θέμα", language: "Γλώσσα",
+        companyName: "Εταιρική Επωνυμία", autoBackup: "Αυτόματο Αντίγραφο", enableAutoBackup: "Ενεργοποίηση αυτόματων αντιγράφων",
+        backupFrequency: "Συχνότητα", daily: "Καθημερινά σε συγκεκριμένη ώρα", interval: "Κάθε X ώρες",
+        backupTime: "Ώρα (24h)", runEveryHours: "Κάθε (ώρες)", fileNaming: "Ονομασία Αρχείων",
+        filenameFormat: "Μορφή Ονόματος", logging: "Καταγραφή", consoleLog: "Καταγραφή κονσόλας",
+        fileLog: "Καταγραφή αρχείου", httpLog: "Καταγραφή αιτημάτων HTTP", saveSettings: "Αποθήκευση",
+        lastBackup: "Τελευταίο:", uptime: "Λειτουργία:", selectFilesToSearch: "Επιλέξτε αρχεία για αναζήτηση",
+        selectFilesAndEnterTerm: "Επιλέξτε αρχεία και εισάγετε όρο",
+        newestFirst: "Νεότερο πρώτα", oldestFirst: "Παλαιότερο πρώτα", search: "Αναζήτηση", clear: "Καθαρισμός",
+        months: ['Ιαν', 'Φεβ', 'Μάρ', 'Απρ', 'Μάι', 'Ιούν', 'Ιούλ', 'Αύγ', 'Σεπ', 'Οκτ', 'Νοέ', 'Δεκ']
+      },
+      sr: {
+        dashboard: "Kontrolna tabla", backups: "Rezervne kopije", systemLogs: "Dnevnici sistema", settings: "Podešavanja",
+        toggleTheme: "Promena teme", createBackup: "Napravi rezervnu kopiju", refresh: "Osveži",
+        backupExplorer: "📁 Istraživač", browseBackups: "📁 Pregledaj", searchAcrossBackups: "🔍 Pretraga rezervnih kopija",
+        download: "Preuzmi", delete: "Obriši", selectFileToPreview: "Izaberite fajl za pregled",
+        allBackups: "Sve rezervne kopije", appearance: "Izgled", theme: "Tema", language: "Jezik",
+        companyName: "Naziv kompanije", autoBackup: "Automatska rezervna kopija", enableAutoBackup: "Omogući automatske rezervne kopije",
+        backupFrequency: "Učestalost", daily: "Dnevno u određeno vreme", interval: "Svakih X sati",
+        backupTime: "Vreme (24h)", runEveryHours: "Svakih (sati)", fileNaming: "Imenovanje fajlova",
+        filenameFormat: "Format imena", logging: "Dnevnici", consoleLog: "Dnevnik konzole",
+        fileLog: "Dnevnik fajla", httpLog: "HTTP dnevnik zahteva", saveSettings: "Sačuvaj",
+        lastBackup: "Poslednji:", uptime: "Vreme rada:", selectFilesToSearch: "Izaberite fajlove za pretragu",
+        selectFilesAndEnterTerm: "Izaberite fajlove i unesite termin",
+        newestFirst: "Najnovije prvo", oldestFirst: "Najstarije prvo", search: "Pretraga", clear: "Očisti",
+        months: ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Avg', 'Sep', 'Okt', 'Nov', 'Dec']
+      }
+    };
+    let currentLang = 'en';
+    function applyLanguage(lang) {
+      currentLang = lang;
+      document.getElementById('langSelect').value = lang;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        // Skip elements that have child elements (to not destroy inner structure)
+        if (el.children.length > 0) return;
+        const key = el.getAttribute('data-i18n');
+        const text = translations[lang]?.[key] || translations.en[key] || key;
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = text;
+        else el.textContent = text;
+      });
+      const settingsForm = document.getElementById('settingsForm');
+      if (settingsForm) settingsForm.elements.language.value = lang;
+      if (backupData.items) { renderFileTree(backupData.items); loadBrowseTree(); loadSearchTree(); }
+      loadStatus();
+    }
+    document.getElementById('langSelect').addEventListener('change', e => {
+      const lang = e.target.value;
+      applyLanguage(lang);
+      fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...settings, language: lang }) });
+    });
+
+    // ====== RESIZE ======
+    const sidebar = document.getElementById('sidebar');
+    const sidebarHandle = document.getElementById('sidebarResizeHandle');
+    let sidebarResizing = false;
+    sidebarHandle.addEventListener('mousedown', (e) => { sidebarResizing = true; sidebarHandle.classList.add('active'); document.addEventListener('mousemove', resizeSidebar); document.addEventListener('mouseup', stopSidebarResize); });
+    function resizeSidebar(e) { if (!sidebarResizing) return; const w = e.clientX; if (w > 180 && w < 400) sidebar.style.width = w + 'px'; }
+    function stopSidebarResize() { sidebarResizing = false; sidebarHandle.classList.remove('active'); document.removeEventListener('mousemove', resizeSidebar); }
+
+    const explorer = document.getElementById('explorerPanel');
+    const explorerHandle = document.getElementById('explorerResizeHandle');
+    let explorerResizing = false;
+    explorerHandle.addEventListener('mousedown', (e) => { explorerResizing = true; explorerHandle.classList.add('active'); document.addEventListener('mousemove', resizeExplorer); document.addEventListener('mouseup', stopExplorerResize); });
+    function resizeExplorer(e) { if (!explorerResizing) return; const w = e.clientX - explorer.getBoundingClientRect().left; if (w > 200 && w < 700) explorer.style.width = w + 'px'; }
+    function stopExplorerResize() { explorerResizing = false; explorerHandle.classList.remove('active'); document.removeEventListener('mousemove', resizeExplorer); }
+
+    // ====== SORT ======
+    let sortNewestFirst = true;
+    function toggleSortOrder() { sortNewestFirst = !sortNewestFirst; document.getElementById('sortOrderIcon').textContent = sortNewestFirst ? '↓' : '↑'; if (backupData.items) renderFileTree(backupData.items); }
+
+    // ====== STATE ======
+    let currentFile = null, zoom = 100, settings = {}, backupData = { items: [] };
+    let originalStructured = null, currentStructured = null, currentCompanyName = '';
+    let searchZoom = 100;
+    let lastSearchResults = null, lastSearchTerm = '';
+    let expandedCards = new Set();
+
+    // ====== FILE NAME HELPER (keeps suffix) ======
+    function displayFileName(file) { return file.replace(/\.xlsx$/i, ''); }
+
+    // ====== INIT ======
+    document.addEventListener('DOMContentLoaded', () => {
+      setupNavigation();
+      loadStatus();
+      loadFileTree();
+      loadSettings();
+      setInterval(loadStatus, 30000); setInterval(updateUptime, 1000); updateUptime();
+      startLogUpdates();
+    });
+
+    function setupNavigation() {
+      document.querySelectorAll('[data-page]').forEach(item => {
+        item.addEventListener('click', () => {
+          const page = item.dataset.page;
+          document.querySelectorAll('[data-page]').forEach(n => n.classList.remove('active'));
+          item.classList.add('active');
+          document.querySelectorAll('[id$="Page"]').forEach(p => p.classList.add('hidden'));
+          document.getElementById(page + 'Page').classList.remove('hidden');
+          document.getElementById('pageTitle').setAttribute('data-i18n', page);
+          applyLanguage(currentLang);
+          if (page === 'logs') loadLogs();
+          if (page === 'backups') { loadBrowseTree(); loadSearchTree(); }
+        });
+      });
+    }
+
+    function showAlert(message, type = 'info') {
+      const container = document.getElementById('alertContainer');
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span> ${message}`;
+      container.appendChild(alert);
+      setTimeout(() => alert.remove(), 5000);
+    }
+
+    function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+    // ====== LOGS ======
+    let logUpdateInterval;
+    function startLogUpdates() { loadLogs(); logUpdateInterval = setInterval(loadLogs, 2000); }
+    async function loadLogs() {
+      try {
+        const r = await fetch('/api/logs'); const j = await r.json();
+        if (!j.success) return;
+        const container = document.getElementById('logViewer');
+        if (!container) return;
+        let html = '';
+        j.logs.forEach(line => {
+          const timeMatch = line.match(/^\[([^\]]+)\]/);
+          const time = timeMatch ? timeMatch[1] : '';
+          let levelClass = 'log-default';
+          if (line.includes('ERROR')) levelClass = 'log-error';
+          else if (line.includes('WARN')) levelClass = 'log-warn';
+          else if (line.includes('INFO')) levelClass = 'log-info';
+          else if (line.includes('DEBUG')) levelClass = 'log-debug';
+          else if (line.includes('http')) levelClass = 'log-http';
+          html += `<div class="log-line"><span class="log-time">[${time}]</span><span class="${levelClass}">${escapeHtml(line.substring(time ? time.length + 3 : 0))}</span></div>`;
+        });
+        const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 20;
+        container.innerHTML = html;
+        if (shouldScroll || container.scrollTop === 0) container.scrollTop = container.scrollHeight;
+      } catch (e) { }
+    }
+
+    // ====== BACKUP OPERATIONS ======
+    async function runBackup() {
+      showAlert('Starting backup...', 'info');
+      try {
+        const r = await fetch('/api/export'); const j = await r.json();
+        if (!j.success) showAlert(j.message, 'error');
+        else { showAlert('Backup completed!', 'success'); loadFileTree(); loadStatus(); }
+      } catch (e) { showAlert('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadFileTree() {
+      try {
+        const r = await fetch('/api/tree'); const j = await r.json();
+        if (!j.success) { showAlert(j.message, 'error'); return; }
+        backupData = j;
+        let total = 0;
+        if (j.items) j.items.forEach(y => y.months?.forEach(m => total += m.files?.length || 0));
+        document.getElementById('backupCount').textContent = `${total} backup${total !== 1 ? 's' : ''}`;
+        renderFileTree(j.items || []);
+      } catch (e) { showAlert('Failed to load backups', 'error'); }
+    }
+
+    function renderFileTree(items) {
+      const container = document.getElementById('fileTree');
+      if (!items || !items.length) { container.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:20px;">No backups yet</div>'; return; }
+      let ordered = [...items];
+      ordered.sort((a, b) => sortNewestFirst ? b.year - a.year : a.year - b.year);
+      let html = '';
+      ordered.forEach(year => {
+        if (!year.months) return;
+        html += `<div class="tree-item" onclick="toggleChildren(this)"><span class="arrow-icon">▶</span><span>📂</span><span>${year.year}</span><span style="margin-left:auto;color:var(--text-muted);">${year.months.length}</span></div><div class="tree-children hidden">`;
+        let monthsOrdered = [...year.months];
+        monthsOrdered.sort((a, b) => sortNewestFirst ? b.name - a.name : a.name - b.name);
+        monthsOrdered.forEach(month => {
+          html += `<div class="tree-item" onclick="toggleChildren(this)" style="padding-left:16px;"><span class="arrow-icon">▶</span><span>📁</span><span>${getMonthName(month.name)}</span><span style="margin-left:auto;color:var(--text-muted);">${month.files.length}</span></div><div class="tree-children hidden">`;
+          let filesOrdered = [...month.files];
+          filesOrdered.sort((a, b) => sortNewestFirst ? b.localeCompare(a) : a.localeCompare(b));
+          filesOrdered.forEach(file => {
+            html += `<div class="tree-item file-item" style="display:flex;padding-left:32px;"><span style="flex:1;" onclick="selectFile(event, '${year.year}', '${month.name}', '${file}')"><span>📄</span><span>${displayFileName(file)}</span></span><button class="btn-icon" style="padding:2px 6px;" onclick="viewLog(event, '${year.year}', '${month.name}', '${file}')" title="View Log">📋</button></div>`;
+          });
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+      container.innerHTML = html;
+    }
+
+    function getMonthName(m) { const months = translations[currentLang].months; return months[parseInt(m) - 1] || m; }
+
+    function toggleChildren(el) {
+      const arrow = el.querySelector('.arrow-icon');
+      if (arrow) arrow.classList.toggle('expanded');
+      const children = el.nextElementSibling;
+      if (children && children.classList.contains('tree-children')) children.classList.toggle('hidden');
+    }
+
+    async function selectFile(event, year, month, file) {
+      document.querySelectorAll('.file-item').forEach(f => f.classList.remove('selected'));
+      event.currentTarget.closest('.file-item').classList.add('selected');
+      currentFile = { year, month, file };
+      document.getElementById('downloadBtn').disabled = false;
+      document.getElementById('deleteBtn').disabled = false;
+      await previewFile(year, month, file);
+    }
+
+    async function previewFile(year, month, file) {
+      try {
+        const r = await fetch(`/api/preview/${year}/${month}/${encodeURIComponent(file)}`);
+        const j = await r.json();
+        if (!j.success) { showAlert(j.message, 'error'); return; }
+        originalStructured = j.structured;
+        currentStructured = JSON.parse(JSON.stringify(originalStructured));
+        currentCompanyName = j.metadata?.companyName || settings.companyName || '';
+        renderStructuredPreview(currentStructured);
+      } catch (e) { showAlert('Preview failed', 'error'); }
+    }
+
+    function renderStructuredPreview(structured) {
+      const container = document.getElementById('previewContainer');
+      if (!structured || !structured.groups.length) { container.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding:60px;">${translations[currentLang].selectFileToPreview}</div>`; return; }
+      const { groups, headers } = structured;
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      let html = `<table class="excel-table" style="zoom:${zoom / 100}">`;
+      html += `<tr class="company-row"><td colspan="${headers.length + 1}">${currentCompanyName}</td></tr>`;
+      html += `<tr class="empty-row"><td colspan="${headers.length + 1}"></td></tr>`;
+      groups.forEach((group, idx) => {
+        html += `<tr class="group-row"><td colspan="${headers.length + 1}" style="color:${group.color};">${highlightText(group.name, searchTerm)}</td></tr>`;
+        html += '<tr><th>Item Name</th>';
+        headers.forEach(h => html += `<th>${highlightText(h, searchTerm)}</th>`);
+        html += '</tr>';
+        group.items.forEach(item => {
+          html += '<tr>';
+          html += `<td>${highlightText(item.name || '', searchTerm)}</td>`;
+          headers.forEach(h => {
+            const val = item.values[h] || '';
+            const isNumeric = !isNaN(parseFloat(val)) && isFinite(val) && val !== '';
+            const bgColor = item.colors?.[h];
+            const style = `${isNumeric ? 'text-align:right;' : ''} ${bgColor ? `background-color:${bgColor};color:${getContrastColor(bgColor)};` : ''}`;
+            html += `<td style="${style}">${highlightText(String(val), searchTerm)}</td>`;
+          });
+          html += '</tr>';
+        });
+        if (idx < groups.length - 1) html += `<tr class="empty-row"><td colspan="${headers.length + 1}"></td></tr>`;
+      });
+      html += '</table>';
+      container.innerHTML = html;
+    }
+
+    function highlightText(text, term) {
+      if (!term) return escapeHtml(text);
+      const escaped = escapeHtml(text);
+      const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return escaped.replace(regex, '<span class="search-highlight">$1</span>');
+    }
+
+    function getContrastColor(hex) {
+      if (!hex) return 'inherit';
+      const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 128 ? '#000000' : '#ffffff';
+    }
+
+    function filterPreview() {
+      const term = document.getElementById('searchInput').value.toLowerCase();
+      if (!term) { currentStructured = JSON.parse(JSON.stringify(originalStructured)); renderStructuredPreview(currentStructured); return; }
+      const filtered = { groups: [], headers: originalStructured.headers };
+      originalStructured.groups.forEach(group => {
+        const groupMatches = group.name.toLowerCase().includes(term);
+        let fitems = [];
+        if (groupMatches) fitems = group.items;
+        else fitems = group.items.filter(item => item.name.toLowerCase().includes(term) || Object.values(item.values).some(v => String(v).toLowerCase().includes(term)));
+        if (fitems.length) filtered.groups.push({ ...group, items: fitems });
+      });
+      currentStructured = filtered;
+      renderStructuredPreview(currentStructured);
+    }
+
+    function zoomIn() { zoom = Math.min(200, zoom + 25); document.getElementById('zoomLevel').textContent = zoom + '%'; if (currentStructured) renderStructuredPreview(currentStructured); }
+    function zoomOut() { zoom = Math.max(50, zoom - 25); document.getElementById('zoomLevel').textContent = zoom + '%'; if (currentStructured) renderStructuredPreview(currentStructured); }
+
+    function downloadCurrent() { if (currentFile) window.location.href = `/api/download/${currentFile.year}/${currentFile.month}/${currentFile.file}`; }
+
+    async function deleteCurrent() {
+      if (!currentFile || !confirm('Delete this backup?')) return;
+      try {
+        const r = await fetch(`/api/delete/${currentFile.year}/${currentFile.month}/${currentFile.file}`, { method: 'DELETE' });
+        const j = await r.json();
+        if (j.success) { showAlert('Deleted', 'success'); currentFile = null; loadFileTree(); document.getElementById('previewContainer').innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:60px;">Select a file</div>'; }
+        else showAlert(j.message, 'error');
+      } catch (e) { showAlert('Delete failed', 'error'); }
+    }
+
+    async function viewLog(event, year, month, file) {
+      event.stopPropagation();
+      try {
+        const r = await fetch(`/api/log/${year}/${month}/${file}`);
+        const j = await r.json();
+        if (j.success) showLogModal(j.content, `${year}/${month}/${file}`);
+        else showAlert('No log file found', 'error');
+      } catch (e) { showAlert('Failed to load log', 'error'); }
+    }
+    function showLogModal(content, title) {
+      const modal = document.createElement('div');
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `<div class="modal"><div class="modal-header"><span>📋 Log: ${title}</span><button class="btn-icon" onclick="this.closest('.modal-overlay').remove()">✕</button></div><div class="modal-body"><pre style="white-space:pre-wrap;font-family:monospace;font-size:12px;">${escapeHtml(content)}</pre></div><div class="modal-footer"><button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Close</button></div></div>`;
+      document.body.appendChild(modal);
+    }
+
+    // ====== STATUS ======
+    async function loadStatus() {
+      try {
+        const r = await fetch('/api/status');
+        const j = await r.json();
+        if (j.success) {
+          document.getElementById('credsStatus').className = 'status-dot ' + (j.credentials ? '' : 'error');
+          document.getElementById('cronStatus').className = 'status-dot ' + (j.cronEnabled ? '' : 'warning');
+          document.getElementById('cronScheduleText').textContent = j.cronEnabled ? j.cronSchedule : 'Auto Backup';
+          document.getElementById('lastBackup').textContent = j.lastBackup || 'Never';
+        }
+      } catch (e) {}
+    }
+    
+    function updateUptime() {
+      fetch('/api/health')
+        .then(r => r.json())
+        .then(j => {
+          if (j.success) {
+            const s = Math.floor(j.uptime);
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            const sec = s % 60;
+            document.getElementById('uptime').textContent = `${h}h ${m}m ${sec}s`;
+          }
+        })
+        .catch(() => {});
+    }
+
+    // ====== BROWSE TREE ======
+    let browseSortOrder = 'newest';
+    function changeBrowseSort(order) { browseSortOrder = order; loadBrowseTree(); }
+    function loadBrowseTree() {
+      if (!backupData.items) { document.getElementById('browseTree').innerHTML = '<div style="color:var(--text-muted);">No backups</div>'; return; }
+      let ordered = [...backupData.items];
+      ordered.sort((a, b) => browseSortOrder === 'newest' ? b.year - a.year : a.year - b.year);
+      let html = '';
+      ordered.forEach(year => {
+        if (!year.months) return;
+        html += `<div class="tree-item" onclick="toggleChildren(this)"><span class="arrow-icon">▶</span><span>📂</span><span>${year.year}</span><span style="margin-left:auto;color:var(--text-muted);">${year.months.length}</span></div><div class="tree-children hidden">`;
+        let monthsOrdered = [...year.months];
+        monthsOrdered.sort((a, b) => browseSortOrder === 'newest' ? b.name - a.name : a.name - b.name);
+        monthsOrdered.forEach(month => {
+          html += `<div class="tree-item" onclick="toggleChildren(this)" style="padding-left:16px;"><span class="arrow-icon">▶</span><span>📁</span><span>${getMonthName(month.name)}</span><span style="margin-left:auto;color:var(--text-muted);">${month.files.length}</span></div><div class="tree-children hidden">`;
+          let filesOrdered = [...month.files];
+          filesOrdered.sort((a, b) => browseSortOrder === 'newest' ? b.localeCompare(a) : a.localeCompare(b));
+          filesOrdered.forEach(file => {
+            html += `<div class="tree-item file-item" style="display:flex;padding-left:32px;"><span style="flex:1;" onclick="selectFile(event, '${year.year}', '${month.name}', '${file}')"><span>📄</span><span>${displayFileName(file)}</span></span><div style="display:flex;gap:4px;"><button class="btn-icon" style="padding:2px 6px;" onclick="event.stopPropagation(); downloadFile('${year.year}','${month.name}','${file}')"><i data-lucide="download" style="width:14px;height:14px;"></i></button><button class="btn-icon" style="padding:2px 6px;" onclick="event.stopPropagation(); deleteFile('${year.year}','${month.name}','${file}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button></div></div>`;
+          });
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+      document.getElementById('browseTree').innerHTML = html;
+      lucide.createIcons();
+    }
+
+    function downloadFile(year, month, file) { window.location.href = `/api/download/${year}/${month}/${file}`; }
+    async function deleteFile(year, month, file) {
+      if (!confirm('Delete this backup?')) return;
+      try {
+        const r = await fetch(`/api/delete/${year}/${month}/${file}`, { method: 'DELETE' });
+        const j = await r.json();
+        if (j.success) { showAlert('Deleted', 'success'); loadFileTree(); loadBrowseTree(); }
+        else showAlert(j.message, 'error');
+      } catch (e) { showAlert('Delete failed', 'error'); }
+    }
+
+    // ====== SEARCH TREE ======
+    let searchSortOrder = 'newest';
+    function changeSearchSort(order) { searchSortOrder = order; loadSearchTree(); }
+
+    async function loadSearchTree() {
+      try {
+        const r = await fetch('/api/tree'); const j = await r.json();
+        if (!j.success) return;
+        buildSearchCheckboxTree(j.items || []);
+      } catch (e) { }
+    }
+
+    function buildSearchCheckboxTree(items) {
+      const container = document.getElementById('checkboxTreeContainer');
+      if (!items || !items.length) { container.innerHTML = '<div style="color:var(--text-muted);">No backups</div>'; return; }
+      let ordered = [...items];
+      ordered.sort((a, b) => searchSortOrder === 'newest' ? b.year - a.year : a.year - b.year);
+      let html = '';
+      ordered.forEach(year => {
+        if (!year.months) return;
+        html += `<div style="margin-bottom:6px;"><div class="tree-checkbox-item"><input type="checkbox" class="year-check" onchange="toggleYearFiles(this, '${year.year}')" id="yr_${year.year}"><span class="expand-handle" onclick="toggleYearExpand('${year.year}')"><span class="arrow-icon" id="arrow_yr_${year.year}">▶</span><span style="font-weight:600;">📂 ${year.year}</span></span></div><div id="months_${year.year}" style="margin-left:24px; display:none;">`;
+        let monthsOrdered = [...year.months];
+        monthsOrdered.sort((a, b) => searchSortOrder === 'newest' ? b.name - a.name : a.name - b.name);
+        monthsOrdered.forEach(month => {
+          html += `<div style="margin-bottom:4px;"><div class="tree-checkbox-item"><input type="checkbox" class="month-check" data-year="${year.year}" data-month="${month.name}" onchange="toggleMonthFiles(this, '${year.year}', '${month.name}')" id="mo_${year.year}_${month.name}"><span class="expand-handle" onclick="toggleMonthExpand('${year.year}', '${month.name}')"><span class="arrow-icon" id="arrow_mo_${year.year}_${month.name}">▶</span><span>📁 ${getMonthName(month.name)}</span></span></div><div id="files_${year.year}_${month.name}" style="margin-left:28px; display:none;">`;
+          let filesOrdered = [...month.files];
+          filesOrdered.sort((a, b) => searchSortOrder === 'newest' ? b.localeCompare(a) : a.localeCompare(b));
+          filesOrdered.forEach(file => {
+            const fileId = `${year.year}/${month.name}/${file}`;
+            html += `<div class="tree-checkbox-item" style="margin-left:16px;"><input type="checkbox" class="file-check" data-file="${fileId}" onchange="updateSelectionInfo()" id="file_${fileId}"><label for="file_${fileId}" style="font-size:12px;">📄 ${displayFileName(file)}</label></div>`;
+          });
+          html += `</div></div>`;
+        });
+        html += `</div></div>`;
+      });
+      container.innerHTML = html;
+      updateSelectionInfo();
+    }
+
+    function toggleYearExpand(year) {
+      const div = document.getElementById('months_' + year);
+      const arrow = document.getElementById('arrow_yr_' + year);
+      if (div.style.display === 'none' || div.style.display === '') { div.style.display = 'block'; arrow.classList.add('expanded'); }
+      else { div.style.display = 'none'; arrow.classList.remove('expanded'); }
+    }
+    function toggleMonthExpand(year, month) {
+      const div = document.getElementById(`files_${year}_${month}`);
+      const arrow = document.getElementById(`arrow_mo_${year}_${month}`);
+      if (div.style.display === 'none' || div.style.display === '') { div.style.display = 'block'; arrow.classList.add('expanded'); }
+      else { div.style.display = 'none'; arrow.classList.remove('expanded'); }
+    }
+
+    function toggleYearFiles(cb, year) {
+      const monthsDiv = document.getElementById('months_' + year);
+      if (cb.checked) {
+        monthsDiv.style.display = 'block'; document.getElementById('arrow_yr_' + year).classList.add('expanded');
+        document.querySelectorAll(`.month-check[data-year="${year}"]`).forEach(mc => mc.checked = true);
+        document.querySelectorAll(`.file-check[data-file^="${year}/"]`).forEach(fc => fc.checked = true);
+      } else {
+        monthsDiv.style.display = 'none'; document.getElementById('arrow_yr_' + year).classList.remove('expanded');
+        document.querySelectorAll(`.month-check[data-year="${year}"]`).forEach(mc => mc.checked = false);
+        document.querySelectorAll(`.file-check[data-file^="${year}/"]`).forEach(fc => fc.checked = false);
+      }
+      updateSelectionInfo();
+    }
+    function toggleMonthFiles(cb, year, month) {
+      const filesDiv = document.getElementById(`files_${year}_${month}`);
+      if (cb.checked) {
+        filesDiv.style.display = 'block'; document.getElementById(`arrow_mo_${year}_${month}`).classList.add('expanded');
+        document.querySelectorAll(`.file-check[data-file^="${year}/${month}/"]`).forEach(fc => fc.checked = true);
+      } else {
+        filesDiv.style.display = 'none'; document.getElementById(`arrow_mo_${year}_${month}`).classList.remove('expanded');
+        document.querySelectorAll(`.file-check[data-file^="${year}/${month}/"]`).forEach(fc => fc.checked = false);
+      }
+      updateSelectionInfo();
+    }
+    function updateSelectionInfo() {
+      const files = document.querySelectorAll('.file-check:checked');
+      const statusEl = document.getElementById('searchStatus');
+      statusEl.textContent = files.length > 0 ? `${files.length} file(s) selected` : translations[currentLang].selectFilesToSearch;
+    }
+
+    // ====== SEARCH (with sort & zoom persistence) ======
+    function searchZoomIn() { searchZoom = Math.min(200, searchZoom + 25); document.getElementById('searchZoomLevel').textContent = searchZoom + '%'; if (lastSearchResults) displaySearchResults(lastSearchResults, lastSearchTerm, true); }
+    function searchZoomOut() { searchZoom = Math.max(50, searchZoom - 25); document.getElementById('searchZoomLevel').textContent = searchZoom + '%'; if (lastSearchResults) displaySearchResults(lastSearchResults, lastSearchTerm, true); }
+
+    async function searchAllBackups() {
+      const q = document.getElementById('backupSearchInput').value.trim();
+      if (!q) { showAlert('Enter a search term', 'info'); return; }
+      const files = document.querySelectorAll('.file-check:checked');
+      if (files.length === 0) { showAlert('Select at least one file to search', 'info'); return; }
+      const selected = Array.from(files).map(f => f.dataset.file);
+      const params = new URLSearchParams({ q, files: selected.join(',') });
+      showAlert('Searching...', 'info');
+      try {
+        const r = await fetch('/api/search?' + params.toString());
+        const j = await r.json();
+        if (!j.success) { showAlert(j.message, 'error'); return; }
+        lastSearchResults = j.results; lastSearchTerm = q;
+        displaySearchResults(j.results, q);
+      } catch (e) { showAlert('Search failed', 'error'); }
+    }
+
+    function displaySearchResults(results, term, keepExpanded = false) {
+      const container = document.getElementById('searchResults');
+      if (!results || results.length === 0) { container.innerHTML = `<div style="color:var(--text-muted);text-align:center;padding:60px;">${translations[currentLang].selectFilesAndEnterTerm}</div>`; return; }
+      if (!keepExpanded) expandedCards.clear();
+      else {
+        document.querySelectorAll('.result-card').forEach(card => {
+          const body = card.querySelector('.result-card-body');
+          const id = body ? body.id : null;
+          if (id && !body.classList.contains('hidden')) expandedCards.add(id);
+        });
+      }
+      const sortedResults = [...results].sort((a, b) => {
+        const aTime = new Date(a.file.replace(/^(\d{4})\/(\d{2})\/(.+)/, '$1-$2-01')).getTime();
+        const bTime = new Date(b.file.replace(/^(\d{4})\/(\d{2})\/(.+)/, '$1-$2-01')).getTime();
+        return searchSortOrder === 'newest' ? bTime - aTime : aTime - bTime;
+      });
+      let html = '';
+      sortedResults.forEach((res, idx) => {
+        const parts = res.file.split('/'); const rawName = parts.pop();
+        const displayName = displayFileName(rawName);
+        const cardId = `resultCard_${idx}`;
+        const isExpanded = expandedCards.has(cardId);
+        html += `<div class="result-card"><div class="result-card-header" onclick="toggleResultCard('${cardId}')"><span class="arrow-icon ${isExpanded ? 'expanded' : ''}" id="arrow_${cardId}">▶</span><span style="font-weight:600;">📄 ${displayName}${res.companyName ? ' – ' + res.companyName : ''}</span><span style="margin-left:auto;color:var(--text-muted);font-size:13px;">${res.groups.reduce((s, g) => s + g.items.length, 0)} matches</span></div><div class="result-card-body ${isExpanded ? '' : 'hidden'}" id="${cardId}" style="zoom:${searchZoom / 100}; max-height:500px; overflow:auto;">`;
+        if (res.groups.length) {
+          html += `<table class="excel-table" style="font-size:12px;"><tr class="company-row"><td colspan="${res.headers.length + 1}">${res.companyName}</td></tr>`;
+          res.groups.forEach((group, gIdx) => {
+            html += `<tr class="group-row"><td colspan="${res.headers.length + 1}" style="color:${group.color};">${highlightText(group.name, term)}</td></tr>`;
+            html += '<tr><th>Item Name</th>'; res.headers.forEach(h => html += `<th>${highlightText(h, term)}</th>`); html += '</tr>';
+            group.items.forEach(item => {
+              html += '<tr>'; html += `<td>${highlightText(item.name || '', term)}</td>`;
+              res.headers.forEach(h => { const val = item.values[h] || ''; html += `<td style="${!isNaN(val) && isFinite(val) ? 'text-align:right;' : ''}">${highlightText(String(val), term)}</td>`; });
+              html += '</tr>';
+            });
+            if (gIdx < res.groups.length - 1) html += `<tr class="empty-row"><td colspan="${res.headers.length + 1}"></td></tr>`;
+          });
+          html += '</table>';
+        }
+        html += `</div></div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function clearSearch() {
+      document.getElementById('backupSearchInput').value = '';
+      lastSearchResults = null; lastSearchTerm = ''; expandedCards.clear();
+      document.getElementById('searchResults').innerHTML = `<div style="color:var(--text-muted);text-align:center;padding:60px;">${translations[currentLang].selectFilesAndEnterTerm}</div>`;
+      updateSelectionInfo();
+    }
+
+    function toggleResultCard(id) {
+      const body = document.getElementById(id); const arrow = document.getElementById('arrow_' + id);
+      body.classList.toggle('hidden'); arrow.classList.toggle('expanded');
+      if (!body.classList.contains('hidden')) expandedCards.add(id); else expandedCards.delete(id);
+    }
+
+    // ====== SETTINGS ======
+    async function loadSettings() {
+      try {
+        const r = await fetch('/api/settings'); const j = await r.json();
+        if (j.success) {
+          settings = j.settings;
+          const f = document.getElementById('settingsForm');
+          f.elements.theme.value = settings.theme || 'light';
+          f.elements.language.value = settings.language || 'en';
+          f.elements.companyName.value = settings.companyName || '';
+          f.elements.filenameFormat.value = settings.filenameFormat || 'DD-MM-YYYY';
+          f.elements.autoBackupEnabled.checked = settings.autoBackup?.enabled || false;
+          f.elements.frequency.value = settings.autoBackup?.frequency || 'daily';
+          f.elements.backupHour.value = settings.autoBackup?.hour || 11;
+          f.elements.backupMinute.value = settings.autoBackup?.minute || 50;
+          f.elements.intervalHours.value = settings.autoBackup?.intervalHours || 12;
+          f.elements.timezone.value = settings.timezone ;
+          f.elements.logConsole.checked = settings.logs?.console ?? true;
+          f.elements.logFile.checked = settings.logs?.file ?? true;
+          f.elements.logHttp.checked = settings.logs?.http ?? true;
+          toggleFrequencyFields(settings.autoBackup?.frequency);
+          document.body.className = settings.theme || 'light';
+          applyLanguage(settings.language || 'en');
+          currentCompanyName = settings.companyName || '';
+        }
+      } catch (e) { }
+    }
+    function toggleFrequencyFields(freq) {
+      document.getElementById('dailyTimeGroup').classList.toggle('hidden', freq !== 'daily');
+      document.getElementById('intervalGroup').classList.toggle('hidden', freq !== 'interval');
+    }
+    document.getElementById('frequencySelect').addEventListener('change', e => toggleFrequencyFields(e.target.value));
+    document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const newSettings = {
+        theme: formData.get('theme'), language: formData.get('language'),
+        companyName: formData.get('companyName') || '', filenameFormat: formData.get('filenameFormat') || 'DD-MM-YYYY', timezone: formData.get('timezone'),
+        autoBackup: {
+          enabled: formData.get('autoBackupEnabled') === 'on', frequency: formData.get('frequency'),
+          hour: parseInt(formData.get('backupHour')) || 11, minute: parseInt(formData.get('backupMinute')) || 50,
+          intervalHours: parseInt(formData.get('intervalHours')) || 12
+        },
+        logs: { console: formData.get('logConsole') === 'on', file: formData.get('logFile') === 'on', http: formData.get('logHttp') === 'on' },
+        display: { zoom: zoom, groupColors: true }
+      };
+      try {
+        const r = await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newSettings) });
+        const j = await r.json();
+        if (j.success) { showAlert('Settings saved', 'success'); document.body.className = newSettings.theme; settings = newSettings; applyLanguage(newSettings.language || 'en'); loadStatus(); }
+        else showAlert(j.message, 'error');
+      } catch (e) { showAlert('Failed to save settings', 'error'); }
+    });
+
+    function toggleTheme() {
+      const newTheme = document.body.className === 'light' ? 'dark' : 'light';
+      document.body.className = newTheme;
+      fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...settings, theme: newTheme }) });
+    }
+
+    function refreshAll() { loadFileTree(); loadStatus(); if (currentFile) previewFile(currentFile.year, currentFile.month, currentFile.file); }
+
+    lucide.createIcons();
+  </script>
+</body>
+
+</html>

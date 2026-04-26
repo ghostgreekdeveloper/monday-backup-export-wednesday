@@ -1,0 +1,15 @@
+{
+  "watch": ["src"],
+  "ignore": [
+    "backups",
+    "backups/**",
+    "logs",
+    "logs/**",
+    "src/config/settings/**",
+    "*.xlsx",
+    "*.meta.json",
+    "*.log.txt"
+  ],
+  "ext": "js,mjs,json",
+  "delay": 500
+}
