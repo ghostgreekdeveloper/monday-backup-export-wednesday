@@ -285,7 +285,7 @@ export async function buildWorkbook(payload, filePath, logFilePath, companyName)
       await fs.appendFile(logFilePath, `[${new Date().toISOString()}] Excel file created: ${filePath}\n`);
     }
   } catch (writeError) {
-    logger.error(`Failed to write Excel file: ${writeError.message}`, { stack: writeEarror.stack });
+    logger.error(`Failed to write Excel file: ${writeError.message}`, { stack: writeError.stack });
     throw writeError;
   }
 }
